@@ -31,6 +31,13 @@ class WorkflowReport:
         )
 
 
+    def __getitem__(
+        self,
+        key: str,
+    ):
+        return self.data[key]
+
+
     def to_dict(self):
 
         return self.data
