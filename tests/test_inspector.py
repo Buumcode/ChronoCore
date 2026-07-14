@@ -24,7 +24,12 @@ def test_inspector_basic():
             "class_type": "KSampler",
             "inputs": {
                 "positive": ["1", 0],
-                "negative": ["2", 0]
+                "negative": ["2", 0],
+                "steps": 20,
+                "cfg": 7,
+                "sampler_name": "euler",
+                "scheduler": "normal",
+                "denoise": 1.0
             }
         }
     }
@@ -51,3 +56,6 @@ def test_inspector_basic():
         "ConditioningZeroOut"
         in result["conditioning"]
     )
+    
+    assert result["sampler"]["type"] == "KSampler"
+    assert result["sampler"]["steps"] == 20
