@@ -1,5 +1,7 @@
 from datetime import datetime, UTC
 import uuid
+from uuid import uuid4
+from datetime import datetime, timezone
 
 
 class WorkflowSnapshot:
@@ -11,17 +13,14 @@ class WorkflowSnapshot:
     """
 
 
-    def __init__(
-        self,
-        report,
-    ):
+    def __init__(self, report):
 
-        self.id = str(
-            uuid.uuid4()
-        )
+        self.id = str(uuid4())
 
-        self.created = (
-            datetime.now(UTC)
+        self.report = report
+
+        self.created = datetime.now(
+            timezone.utc
         )
 
         self.report = report

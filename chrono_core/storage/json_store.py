@@ -20,24 +20,24 @@ class JsonHistoryStore:
 
 
 
-    def save(
-        self,
-        history,
-    ):
+    def save(self, history):
 
-        data = {
-            "snapshots": [
-                snapshot.to_dict()
-                for snapshot in history.all()
-            ]
-        }
+        data = []
 
+        for snapshot in history.all():
+
+            data.append(
+                {
+                    "id": snapshot.id,
+                    "created": snapshot.created.isoformat(),
+                    "report": snapshot.report.to_dict()
+                }
+            )
 
         self.path.write_text(
             json.dumps(
                 data,
-                indent=2,
-                ensure_ascii=False,
+                indent=2
             ),
             encoding="utf-8"
         )
@@ -59,7 +59,4 @@ class JsonHistoryStore:
         )
 
 
-        return data.get(
-            "snapshots",
-            []
-        )
+        return data
