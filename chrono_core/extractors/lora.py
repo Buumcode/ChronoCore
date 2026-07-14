@@ -16,10 +16,9 @@ class LoRAExtractor:
 
         loras = []
 
-        for node in graph.all_nodes():
-
-            if node.class_type not in self.LORA_LOADERS:
-                continue
+        for node in graph.find_all_types(
+            *self.LORA_LOADERS
+        ):
 
             loras.append(
                 {
