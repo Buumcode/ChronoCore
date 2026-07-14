@@ -2,6 +2,7 @@ from ..extractors.prompt import PromptExtractor
 from ..extractors.sampler import SamplerExtractor
 from ..extractors.model import ModelExtractor
 from ..conditioning.resolver import ConditioningResolver
+from ..report import WorkflowReport
 
 
 
@@ -24,50 +25,36 @@ class Inspector:
 
     def inspect(self, graph):
 
-        result = {}
+        report = WorkflowReport()
 
-
-        # Prompt analysis
-
-        prompts = self.prompt_extractor.extract(
-            graph
+        report.add(
+            "prompts",
+            self.prompt_extractor.extract(graph)
         )
 
-        result["prompts"] = prompts
-        
-        result["sampler"] = (
-            self.sampler_extractor.extract(
-                graph
-            )
+        report.add(
+            "sampler",
+            self.sampler_extractor.extract(graph)
         )
 
-
-        result["model"] = (
-            self.model_extractor.extract(
-                graph
-            )
+        report.add(
+            "model",
+            self.model_extractor.extract(graph)
         )
-
-
-        # Conditioning analysis
 
         conditioning = ConditioningResolver(
             graph
         )
 
-        result["conditioning"] = self._inspect_conditioning(
-            graph,
-            conditioning
-        )
-        
-        result["sampler"] = (
-            self.sampler_extractor.extract(
-                graph
+        report.add(
+            "conditioning",
+            self._inspect_conditioning(
+                graph,
+                conditioning
             )
         )
 
-
-        return result
+        return report
 
 
 

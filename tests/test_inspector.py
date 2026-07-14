@@ -52,25 +52,27 @@ def test_inspector_basic():
     result = inspector.inspect(
         graph
     )
+    
+    data = result.to_dict()
 
 
-    assert result["prompts"]["positive"] == (
+    assert data["prompts"]["positive"] == (
         "1girl, red dress"
     )
 
 
     assert (
         "ConditioningZeroOut"
-        in result["conditioning"]
+        in data["conditioning"]
     )
     
-    assert result["sampler"]["type"] == "KSampler"
-    assert result["sampler"]["steps"] == 20
+    assert data["sampler"]["type"] == "KSampler"
+    assert data["sampler"]["steps"] == 20
 
-    assert result["model"]["type"] == (
-    "CheckpointLoaderSimple"
+    assert data["model"]["type"] == (
+        "CheckpointLoaderSimple"
     )
 
-    assert result["model"]["checkpoint"] == (
+    assert data["model"]["checkpoint"] == (
         "dreamshaperXL.safetensors"
     )
