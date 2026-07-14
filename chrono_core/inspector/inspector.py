@@ -5,6 +5,7 @@ from ..extractors.lora import LoRAExtractor
 from ..conditioning.resolver import ConditioningResolver
 from ..report import WorkflowReport
 from ..analyzers.statistics import WorkflowStatistics
+from ..analyzers.dependencies import DependencyAnalyzer
 
 
 
@@ -24,6 +25,7 @@ class Inspector:
         self.model_extractor = ModelExtractor()
         self.lora_extractor = LoRAExtractor()
         self.statistics = WorkflowStatistics()
+        self.dependency_analyzer = DependencyAnalyzer()
 
 
 
@@ -44,6 +46,11 @@ class Inspector:
         report.add(
             "model",
             self.model_extractor.extract(graph)
+        )
+        
+        report.add(
+            "dependencies",
+            self.dependency_analyzer.analyze(graph)
         )
         
         report.add(

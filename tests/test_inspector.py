@@ -93,3 +93,12 @@ def test_inspector_basic():
     )
 
     assert data["loras"][0]["strength_model"] == 0.8
+    
+    assert len(
+        data["dependencies"]["nodes"]
+    ) == 5
+
+    assert {
+        "from": "1",
+        "to": "3"
+    } in data["dependencies"]["edges"]    

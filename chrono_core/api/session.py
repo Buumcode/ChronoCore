@@ -50,6 +50,14 @@ class Session:
             []
         ) 
 
+    @property
+    def dependencies(self):
+
+        return self.report.get(
+            "dependencies",
+            {}
+        )
+
     @classmethod
     def from_file(cls, path):
 
