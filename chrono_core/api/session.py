@@ -1,6 +1,8 @@
 from ..adapters.comfyui import ComfyUIAdapter
 from ..inspector.inspector import Inspector
 from ..io import WorkflowLoader
+from ..history import HistoryManager
+from ..storage import JsonHistoryStore
 
 
 class Session:
@@ -21,6 +23,12 @@ class Session:
 
         self.report = self.inspector.inspect(
             self.graph
+        )
+
+        self.history = HistoryManager()
+
+        self.history.add(
+            self.report
         )
         
     @property
@@ -64,3 +72,29 @@ class Session:
         workflow = WorkflowLoader.load(path)
 
         return cls(workflow)        
+        
+    def save_history(
+        self,
+        path,
+    ):
+
+        store = JsonHistoryStore(
+            path
+        )
+
+        store.save(
+            self.history
+        )
+
+
+
+    def load_history(
+        self,
+        path,
+    ):
+
+        store = JsonHistoryStore(
+            path
+        )
+
+        return store.load()        
