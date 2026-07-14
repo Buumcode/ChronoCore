@@ -1,5 +1,6 @@
 from ..graph.graph import Graph
 from ..graph.walker import GraphWalker
+from ..conditioning.resolver import ConditioningResolver
 
 from .text import (
     is_text_node,
@@ -19,6 +20,7 @@ class PromptExtractor:
 
 
         walker = GraphWalker(graph)
+        conditioning = ConditioningResolver(graph)
 
 
         for node in graph.all_nodes():
@@ -37,7 +39,8 @@ class PromptExtractor:
                 result["positive"] = (
                     self._extract_from_link(
                         positive,
-                        walker
+                        walker,
+                        conditioning
                     )
                 )
 
@@ -47,7 +50,8 @@ class PromptExtractor:
                 result["negative"] = (
                     self._extract_from_link(
                         negative,
-                        walker
+                        walker,
+                        conditioning
                     )
                 )
 
@@ -60,6 +64,7 @@ class PromptExtractor:
         self,
         link,
         walker: GraphWalker,
+        conditioning: ConditioningResolver,
     ):
 
         if not isinstance(link, list):
@@ -74,9 +79,7 @@ class PromptExtractor:
             return ""
 
 
-        if first.is_type(
-            "ConditioningZeroOut"
-        ):
+        if conditioning.is_zero_out(link):
             return ""
 
 
