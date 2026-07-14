@@ -56,6 +56,24 @@ class PromptExtractor:
                 )
 
 
+        # fallback для workflow без KSampler
+        if not result["positive"]:
+
+            for node in graph.all_nodes():
+
+                if node.class_type.startswith(
+                    "CLIPTextEncode"
+                ):
+
+                    text = node.get_input(
+                        "text"
+                    )
+
+                    if isinstance(text, str):
+                        result["positive"] = text
+                        break
+
+
         return result
 
 

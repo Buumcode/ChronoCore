@@ -1,5 +1,6 @@
 from ..adapters.comfyui import ComfyUIAdapter
 from ..inspector.inspector import Inspector
+from ..io import WorkflowLoader
 
 
 class Session:
@@ -47,4 +48,11 @@ class Session:
         return self.report.get(
             "loras",
             []
-        )        
+        ) 
+
+    @classmethod
+    def from_file(cls, path):
+
+        workflow = WorkflowLoader.load(path)
+
+        return cls(workflow)        
