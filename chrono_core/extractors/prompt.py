@@ -1,4 +1,10 @@
 from ..graph.graph import Graph
+from ..graph.walker import GraphWalker
+
+from .text import (
+    is_text_node,
+    extract_text,
+)
 
 
 class PromptExtractor:
@@ -6,74 +12,82 @@ class PromptExtractor:
 
     def extract(self, graph: Graph):
 
-        positive = ""
-        negative = ""
-
-        for node in graph.all_nodes():
-
-            pos = node.get_input("positive")
-            neg = node.get_input("negative")
-
-
-            if pos:
-                text = self._resolve_conditioning(
-                    pos,
-                    graph
-                )
-
-                if text:
-                    positive = text
-
-
-            if neg:
-                text = self._resolve_conditioning(
-                    neg,
-                    graph
-                )
-
-                negative = text
-
-
-        return {
-            "positive": positive,
-            "negative": negative,
+        result = {
+            "positive": "",
+            "negative": "",
         }
 
 
-    def _resolve_conditioning(
+        walker = GraphWalker(graph)
+
+
+        for node in graph.all_nodes():
+
+            positive = node.get_input(
+                "positive"
+            )
+
+            negative = node.get_input(
+                "negative"
+            )
+
+
+            if positive:
+
+                result["positive"] = (
+                    self._extract_from_link(
+                        positive,
+                        walker
+                    )
+                )
+
+
+            if negative:
+
+                result["negative"] = (
+                    self._extract_from_link(
+                        negative,
+                        walker
+                    )
+                )
+
+
+        return result
+
+
+
+    def _extract_from_link(
         self,
         link,
-        graph
+        walker: GraphWalker,
     ):
 
         if not isinstance(link, list):
             return ""
 
 
-        node = graph.get(link[0])
+        first = walker.get_link_node(
+            link
+        )
 
-        if node is None:
+        if first is None:
             return ""
 
 
-        # главное правило
-        if node.is_type(
+        if first.is_type(
             "ConditioningZeroOut"
         ):
             return ""
 
 
-        # обычный CLIP
-        if node.class_type.startswith(
-            "CLIPTextEncode"
-        ):
+        node = walker.find_first(
+            link,
+            is_text_node
+        )
 
-            text = node.get_input(
-                "text"
-            )
 
-            if isinstance(text, str):
-                return text
+        if node:
+            return extract_text(node)
 
 
         return ""
