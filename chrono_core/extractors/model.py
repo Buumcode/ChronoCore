@@ -2,29 +2,24 @@ from ..graph.graph import Graph
 
 
 class ModelExtractor:
-    """
-    Извлекает информацию о загруженной модели.
-    """
 
-
-    MODEL_LOADERS = {
+    MODEL_LOADERS = (
         "CheckpointLoaderSimple",
         "CheckpointLoader",
-    }
-
+    )
 
     def extract(self, graph: Graph):
 
-        for node in graph.all_nodes():
+        node = graph.find_first_type(
+            *self.MODEL_LOADERS
+        )
 
-            if node.class_type in self.MODEL_LOADERS:
+        if node is None:
+            return None
 
-                return {
-                    "type": node.class_type,
-                    "checkpoint": node.get_input(
-                        "ckpt_name"
-                    ),
-                }
-
-
-        return None
+        return {
+            "type": node.class_type,
+            "checkpoint": node.get_input(
+                "ckpt_name"
+            ),
+        }
