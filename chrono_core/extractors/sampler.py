@@ -17,28 +17,19 @@ class SamplerExtractor:
 
     def extract(self, graph: Graph):
 
-        for node in graph.all_nodes():
+        node = graph.find_first_type(
+            "KSampler",
+            "KSamplerAdvanced"
+        )
 
-            if node.class_type in self.SAMPLER_TYPES:
+        if node is None:
+            return None
 
-                return {
-                    "type": node.class_type,
-                    "steps": node.get_input(
-                        "steps"
-                    ),
-                    "cfg": node.get_input(
-                        "cfg"
-                    ),
-                    "sampler": node.get_input(
-                        "sampler_name"
-                    ),
-                    "scheduler": node.get_input(
-                        "scheduler"
-                    ),
-                    "denoise": node.get_input(
-                        "denoise"
-                    ),
-                }
-
-
-        return None
+        return {
+            "type": node.class_type,
+            "steps": node.get_input("steps"),
+            "cfg": node.get_input("cfg"),
+            "sampler": node.get_input("sampler_name"),
+            "scheduler": node.get_input("scheduler"),
+            "denoise": node.get_input("denoise"),
+        }
