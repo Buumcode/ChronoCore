@@ -17,3 +17,55 @@ class Graph:
 
     def all_nodes(self):
         return self.nodes.values()
+        
+    def find_first_type(
+        self,
+        *types: str,
+    ):
+        """
+        Возвращает первый узел
+        одного из указанных типов.
+        """
+
+        for node in self.all_nodes():
+
+            if node.class_type in types:
+                return node
+
+        return None
+
+    ### `find_all_types()`
+    def find_all_types(
+        self,
+        *types: str,
+    ):
+        """
+        Возвращает все узлы
+        указанных типов.
+        """
+
+        result = []
+
+        for node in self.all_nodes():
+
+            if node.class_type in types:
+                result.append(node)
+
+        return result
+
+    ### `find_first()`
+    def find_first(
+        self,
+        predicate,
+    ):
+        """
+        Возвращает первый узел,
+        удовлетворяющий условию.
+        """
+
+        for node in self.all_nodes():
+
+            if predicate(node):
+                return node
+
+        return None        
