@@ -1,5 +1,6 @@
 from ..extractors.prompt import PromptExtractor
 from ..extractors.sampler import SamplerExtractor
+from ..extractors.model import ModelExtractor
 from ..conditioning.resolver import ConditioningResolver
 
 
@@ -17,6 +18,7 @@ class Inspector:
 
         self.prompt_extractor = PromptExtractor()
         self.sampler_extractor = SamplerExtractor()
+        self.model_extractor = ModelExtractor()
 
 
 
@@ -35,6 +37,13 @@ class Inspector:
         
         result["sampler"] = (
             self.sampler_extractor.extract(
+                graph
+            )
+        )
+
+
+        result["model"] = (
+            self.model_extractor.extract(
                 graph
             )
         )

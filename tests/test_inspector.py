@@ -5,7 +5,14 @@ from chrono_core.inspector.inspector import Inspector
 def test_inspector_basic():
 
     workflow = {
-
+    
+        "0": {
+            "class_type": "CheckpointLoaderSimple",
+            "inputs": {
+                "ckpt_name": "dreamshaperXL.safetensors"
+            }
+        },
+        
         "1": {
             "class_type": "CLIPTextEncode",
             "inputs": {
@@ -59,3 +66,11 @@ def test_inspector_basic():
     
     assert result["sampler"]["type"] == "KSampler"
     assert result["sampler"]["steps"] == 20
+
+    assert result["model"]["type"] == (
+    "CheckpointLoaderSimple"
+    )
+
+    assert result["model"]["checkpoint"] == (
+        "dreamshaperXL.safetensors"
+    )
