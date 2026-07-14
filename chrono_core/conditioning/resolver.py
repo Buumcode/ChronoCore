@@ -1,6 +1,7 @@
 from ..graph.graph import Graph
 from ..graph.node import Node
 from ..graph.walker import GraphWalker
+from .chain import ConditioningChain
 
 
 class ConditioningResolver:
@@ -38,6 +39,14 @@ class ConditioningResolver:
 
         return node
 
+
+    def resolve_chain(self, link):
+
+        nodes = self.walker.walk_backwards(
+            link
+        )
+
+        return ConditioningChain(nodes)
 
 
     def is_zero_out(
