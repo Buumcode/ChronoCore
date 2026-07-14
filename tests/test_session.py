@@ -51,3 +51,13 @@ def test_session():
     )
 
     assert session.report["sampler"]["steps"] == 20
+    
+    assert session.prompts["positive"] == (
+        "1girl, red dress"
+    )
+
+    assert session.model["checkpoint"] == (
+        "dreamshaperXL.safetensors"
+    )
+
+    assert session.sampler["steps"] == 20    

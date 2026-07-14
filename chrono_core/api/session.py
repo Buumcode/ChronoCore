@@ -21,3 +21,30 @@ class Session:
         self.report = self.inspector.inspect(
             self.graph
         )
+        
+    @property
+    def prompts(self):
+        return self.report["prompts"]
+
+
+    @property
+    def model(self):
+        return self.report["model"]
+
+
+    @property
+    def sampler(self):
+        return self.report["sampler"]
+
+
+    @property
+    def conditioning(self):
+        return self.report["conditioning"]
+
+
+    @property
+    def loras(self):
+        return self.report.get(
+            "loras",
+            []
+        )        
