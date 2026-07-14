@@ -1,6 +1,7 @@
 from ..extractors.prompt import PromptExtractor
 from ..extractors.sampler import SamplerExtractor
 from ..extractors.model import ModelExtractor
+from ..extractors.lora import LoRAExtractor
 from ..conditioning.resolver import ConditioningResolver
 from ..report import WorkflowReport
 
@@ -20,6 +21,7 @@ class Inspector:
         self.prompt_extractor = PromptExtractor()
         self.sampler_extractor = SamplerExtractor()
         self.model_extractor = ModelExtractor()
+        self.lora_extractor = LoRAExtractor()
 
 
 
@@ -40,6 +42,11 @@ class Inspector:
         report.add(
             "model",
             self.model_extractor.extract(graph)
+        )
+        
+        report.add(
+            "loras",
+            self.lora_extractor.extract(graph)
         )
 
         conditioning = ConditioningResolver(

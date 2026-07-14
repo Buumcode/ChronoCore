@@ -38,7 +38,16 @@ def test_inspector_basic():
                 "scheduler": "normal",
                 "denoise": 1.0
             }
-        }
+        },
+        
+        "4": {
+            "class_type": "LoraLoader",
+            "inputs": {
+                "lora_name": "detail_slider.safetensors",
+                "strength_model": 0.8,
+                "strength_clip": 1.0
+            }
+        },
     }
 
 
@@ -76,3 +85,11 @@ def test_inspector_basic():
     assert data["model"]["checkpoint"] == (
         "dreamshaperXL.safetensors"
     )
+    
+    assert len(data["loras"]) == 1
+
+    assert data["loras"][0]["name"] == (
+        "detail_slider.safetensors"
+    )
+
+    assert data["loras"][0]["strength_model"] == 0.8
