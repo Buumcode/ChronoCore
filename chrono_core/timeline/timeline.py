@@ -141,4 +141,38 @@ class WorkflowTimeline:
             )
 
 
+        return result
+
+    def summary(self):
+
+        stream = self.stream()
+
+
+        result = {
+            "total": len(stream),
+            "snapshots": 0,
+            "branches": 0,
+            "changes": 0,
+        }
+
+
+        for item in stream:
+
+            event_type = item.get(
+                "type"
+            )
+
+
+            if event_type == "snapshot_created":
+                result["snapshots"] += 1
+
+
+            elif event_type == "branch_created":
+                result["branches"] += 1
+
+
+            elif event_type == "changed":
+                result["changes"] += 1
+
+
         return result        
