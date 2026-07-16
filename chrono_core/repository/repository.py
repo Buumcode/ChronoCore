@@ -1,6 +1,7 @@
 from ..history import HistoryManager
 from ..storage import JsonHistoryStore
 from ..timeline import WorkflowTimeline
+from ..query import WorkflowQuery
 
 
 class WorkflowRepository:
@@ -116,3 +117,9 @@ class WorkflowRepository:
     def branches(self):
 
         return self.history_manager.list_branches()
+        
+    def query(self):
+
+        return WorkflowQuery(
+            self.history_manager
+        )        
