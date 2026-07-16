@@ -470,4 +470,22 @@ class WorkflowTimeline:
             )
 
 
-        return result        
+        return result
+
+    def checkpoints(self):
+
+        checkpoints = []
+
+        for index, snapshot in enumerate(
+            self.history.all()
+        ):
+
+            checkpoints.append(
+                {
+                    "index": index,
+                    "snapshot": snapshot.id,
+                    "state": snapshot.report.to_dict(),
+                }
+            )
+
+        return checkpoints       
