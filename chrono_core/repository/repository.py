@@ -156,4 +156,53 @@ class WorkflowRepository:
             )
         )
 
-        return repo        
+        return repo 
+
+    def save(self, path):
+
+        from ..serialization import WorkflowSerializer
+        import json
+
+        serializer = WorkflowSerializer()
+
+        data = serializer.dump(
+            self
+        )
+
+        with open(
+            path,
+            "w",
+            encoding="utf-8"
+        ) as file:
+
+            json.dump(
+                data,
+                file,
+                indent=4
+            ) 
+
+    @classmethod
+    def load(
+        cls,
+        path
+    ):
+
+        from ..serialization import WorkflowSerializer
+        import json
+
+        with open(
+            path,
+            "r",
+            encoding="utf-8"
+        ) as file:
+
+            data = json.load(
+                file
+            )
+
+
+        serializer = WorkflowSerializer()
+
+        return serializer.load(
+            data
+        )            
