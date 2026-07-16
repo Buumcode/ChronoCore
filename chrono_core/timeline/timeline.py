@@ -97,3 +97,48 @@ class WorkflowTimeline:
             key=lambda item:
                 item["created"]
         )        
+        
+    def filter(
+        self,
+        type=None,
+        after=None,
+        before=None
+    ):
+
+        items = self.stream()
+
+
+        result = []
+
+
+        for item in items:
+
+            if type is not None:
+
+                if item.get("type") != type:
+                    continue
+
+
+            created = item.get(
+                "created"
+            )
+
+
+            if after is not None:
+
+                if created <= after:
+                    continue
+
+
+            if before is not None:
+
+                if created >= before:
+                    continue
+
+
+            result.append(
+                item
+            )
+
+
+        return result        

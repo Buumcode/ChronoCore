@@ -2,7 +2,7 @@ from chrono_core.repository import WorkflowRepository
 from chrono_core.report import WorkflowReport
 
 
-def test_timeline_events():
+def test_timeline_filter_type():
 
     repo = WorkflowRepository()
 
@@ -22,17 +22,39 @@ def test_timeline_events():
     )
 
 
+    repo.create_branch(
+        "experiment"
+    )
+
+
     timeline = repo.timeline()
 
 
-    events = timeline.events()
+    events = timeline.filter(
+        type="branch_created"
+    )
 
 
     assert len(events) == 1
 
+
     assert (
         events[0]["type"]
         ==
-        "snapshot_created"
+        "branch_created"
     )
     
+def test_timeline_filter_empty():
+
+    repo = WorkflowRepository()
+
+
+    timeline = repo.timeline()
+
+
+    result = timeline.filter(
+        type="unknown"
+    )
+
+
+    assert result == []        
