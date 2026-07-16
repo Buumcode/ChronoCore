@@ -387,4 +387,12 @@ class WorkflowTimeline:
             del result[name]["sum"]
 
 
-        return result        
+        return result
+
+    def export(self):
+
+        return {
+            "events": len(self.stream()),
+            "snapshots": len(self.history.all()),
+            "metrics": self.metric_summary(),
+        }        
