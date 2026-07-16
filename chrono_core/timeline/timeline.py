@@ -448,4 +448,26 @@ class WorkflowTimeline:
         snapshot = snapshots[index]
 
 
-        return snapshot.report.to_dict()        
+        return snapshot.report.to_dict()
+
+    def replay(self):
+
+        snapshots = self.history.all()
+
+
+        result = []
+
+
+        for index, snapshot in enumerate(
+            snapshots
+        ):
+
+            result.append(
+                {
+                    "index": index,
+                    "state": snapshot.report.to_dict(),
+                }
+            )
+
+
+        return result        
