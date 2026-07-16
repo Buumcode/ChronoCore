@@ -180,4 +180,75 @@ class WorkflowTimeline:
                 result["changes"] += 1
 
 
+        return result 
+
+    def changed(
+        self,
+        key,
+    ):
+
+        result = []
+
+
+        for event in self.build():
+
+            if event["type"] != "changed":
+                continue
+
+
+            changes = event.get(
+                "changes",
+                {}
+            )
+
+
+            if key not in changes:
+                continue
+
+
+            result.append(
+                changes[key]
+            )
+
+
+        return result        
+        
+    def history_of(
+        self,
+        path,
+    ):
+
+        result = []
+
+
+        parts = path.split(
+            "."
+        )
+
+
+        for snapshot in self.history.all():
+
+            value = snapshot.report.to_dict()
+
+
+            try:
+
+                for part in parts:
+
+                    value = value[part]
+
+
+                result.append(
+                    value
+                )
+
+
+            except (
+                KeyError,
+                TypeError,
+            ):
+
+                continue
+
+
         return result        
