@@ -7,26 +7,34 @@ class HistoryManager:
 
     def __init__(self):
 
+        main = WorkflowBranch(
+            "main"
+        )
+
         self.branches = {
-            "main": WorkflowBranch(
-                "main"
-            )
+            "main": main
         }
 
+        self.current_branch = "main"
+
+        # compatibility with old API
         self.active_branch = "main"
 
-        # compatibility
-        self.snapshots = (
-            self.branches["main"].snapshots
-        )
+        self.snapshots = main.snapshots
+
+
+    def _branch(self):
+
+        return self.branches[
+            self.current_branch
+        ]
 
 
     def add(
         self,
         item,
-        branch="main"
+        branch=None
     ):
-
 
         if isinstance(
             item,
@@ -36,6 +44,10 @@ class HistoryManager:
             item = WorkflowSnapshot(
                 item
             )
+
+
+        if branch is None:
+            branch = self.current_branch
 
 
         if branch not in self.branches:
@@ -50,10 +62,10 @@ class HistoryManager:
         )
 
 
-        if branch == "main":
+        if branch == self.current_branch:
 
             self.snapshots = (
-                self.branches["main"].snapshots
+                self.branches[branch].snapshots
             )
 
 
@@ -62,18 +74,17 @@ class HistoryManager:
 
     def all(self):
 
-        return list(
-            self.snapshots
-        )
+        return self._branch().all()
 
 
     def latest(self):
 
-        if not self.snapshots:
+        items = self.all()
+
+        if not items:
             return None
 
-        return self.snapshots[-1]
-
+        return items[-1]
 
 
     def get(
@@ -81,13 +92,12 @@ class HistoryManager:
         snapshot_id,
     ):
 
-        for snapshot in self.snapshots:
+        for snapshot in self.all():
 
             if snapshot.id == snapshot_id:
                 return snapshot
 
         return None
-
 
 
     def diff(
@@ -111,7 +121,8 @@ class HistoryManager:
         return old.compare(
             new
         )
-        
+
+
     def create_branch(
         self,
         name: str,
@@ -127,7 +138,8 @@ class HistoryManager:
 
         self.branches[name] = branch
 
-        return branch  
+        return branch
+
 
     def get_branch(
         self,
@@ -138,15 +150,36 @@ class HistoryManager:
             name
         )
 
+
     def list_branches(self):
 
         return list(
             self.branches.keys()
-        ) 
+        )
+
 
     @property
     def items(self):
 
-        return self.branches[
-            self.active_branch
-        ].all()        
+        return self._branch().all()
+
+
+    def checkout(
+        self,
+        name: str,
+    ):
+
+        if name not in self.branches:
+            raise ValueError(
+                f"Unknown branch: {name}"
+            )
+
+
+        self.current_branch = name
+        self.active_branch = name
+
+        self.snapshots = (
+            self.branches[name].snapshots
+        )
+
+        return self.branches[name]
