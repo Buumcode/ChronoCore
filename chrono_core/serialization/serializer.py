@@ -27,12 +27,42 @@ class WorkflowSerializer:
         data
     ):
 
-        if data.get("format") != self.FORMAT:
+        self.validate(
+            data
+        )
+
+        return WorkflowRepository.from_dict(
+            data["repository"]
+        )
+        
+    def validate(
+        self,
+        data
+    ):
+
+        if data.get(
+            "format"
+        ) != self.FORMAT:
+
             raise ValueError(
                 "Invalid ChronoCore format"
             )
 
 
-        return WorkflowRepository.from_dict(
-            data["repository"]
-        )
+        if data.get(
+            "version"
+        ) != self.VERSION:
+
+            raise ValueError(
+                "Unsupported ChronoCore version"
+            )
+
+
+        if "repository" not in data:
+
+            raise ValueError(
+                "Missing repository data"
+            )
+
+
+        return True        
