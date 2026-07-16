@@ -488,4 +488,15 @@ class WorkflowTimeline:
                 }
             )
 
-        return checkpoints       
+        return checkpoints 
+
+    def restore(
+        self,
+        index
+    ):
+
+        snapshots = self.history.all()
+
+        snapshot = snapshots[index]
+
+        return snapshot.report.to_dict()        
