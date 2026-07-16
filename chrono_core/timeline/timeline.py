@@ -251,4 +251,74 @@ class WorkflowTimeline:
                 continue
 
 
-        return result        
+        return result
+
+    def branch_history(
+        self,
+        branch,
+    ):
+
+        if branch not in self.history.branches:
+            return []
+
+
+        result = []
+
+
+        target = self.history.branches[
+            branch
+        ]
+
+
+        for snapshot in target.all():
+
+            result.append(
+                {
+                    "snapshot": snapshot.id,
+                    "report": snapshot.report.to_dict(),
+                }
+            )
+
+
+        return result
+        
+    def compare_branches(
+        self,
+        old_branch,
+        new_branch,
+    ):
+
+        old_history = self.branch_history(
+            old_branch
+        )
+
+        new_history = self.branch_history(
+            new_branch
+        )
+
+
+        if not old_history or not new_history:
+            return {
+                "changed": {},
+                "added": {},
+                "removed": {},
+            }
+
+
+        from ..diff import WorkflowDiff
+        from ..report import WorkflowReport
+
+
+        old_report = WorkflowReport.from_dict(
+            old_history[-1]["report"]
+        )
+
+        new_report = WorkflowReport.from_dict(
+            new_history[-1]["report"]
+        )
+
+
+        return WorkflowDiff().compare(
+            old_report,
+            new_report
+        )        
