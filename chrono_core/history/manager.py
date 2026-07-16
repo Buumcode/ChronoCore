@@ -183,3 +183,71 @@ class HistoryManager:
         )
 
         return self.branches[name]
+        
+    def to_dict(self):
+
+        return {
+            "branches":
+                {
+                    name:
+                        branch.to_dict()
+                    for name, branch
+                    in self.branches.items()
+                },
+
+            "current_branch":
+                self.current_branch,
+
+            "active_branch":
+                self.active_branch,
+        }  
+
+    @classmethod
+    def from_dict(
+        cls,
+        data
+    ):
+
+        manager = cls()
+
+        manager.branches = {}
+
+        from ..branches import WorkflowBranch
+
+
+        for name, branch_data in (
+            data.get("branches", {})
+            .items()
+        ):
+
+            manager.branches[name] = (
+                WorkflowBranch.from_dict(
+                    branch_data
+                )
+            )
+
+
+        manager.current_branch = (
+            data.get(
+                "current_branch",
+                "main"
+            )
+        )
+
+        manager.active_branch = (
+            data.get(
+                "active_branch",
+                "main"
+            )
+        )
+
+
+        if "main" in manager.branches:
+
+            manager.snapshots = (
+                manager.branches["main"]
+                .snapshots
+            )
+
+
+        return manager        

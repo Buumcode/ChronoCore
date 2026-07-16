@@ -49,3 +49,18 @@ class WorkflowSnapshot:
             "created": self.created.isoformat(),
             "report": self.report.to_dict(),
         }
+        
+    @classmethod
+    def from_dict(cls, data):
+
+        from ..report import WorkflowReport
+
+        snapshot = cls(
+            WorkflowReport.from_dict(
+                data["report"]
+            )
+        )
+
+        snapshot.id = data["id"]
+
+        return snapshot    

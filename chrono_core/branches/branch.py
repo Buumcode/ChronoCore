@@ -46,3 +46,42 @@ class WorkflowBranch:
         return list(
             self.snapshots
         )
+        
+    def to_dict(self):
+
+        return {
+            "name": self.name,
+
+            "snapshots": [
+                snapshot.to_dict()
+                for snapshot
+                in self.snapshots
+            ],
+        }        
+        
+    @classmethod
+    def from_dict(
+        cls,
+        data
+    ):
+
+        from ..history.snapshot import WorkflowSnapshot
+
+        branch = cls(
+            data["name"]
+        )
+
+
+        branch.snapshots = [
+            WorkflowSnapshot.from_dict(
+                snapshot
+            )
+            for snapshot
+            in data.get(
+                "snapshots",
+                []
+            )
+        ]
+
+
+        return branch        

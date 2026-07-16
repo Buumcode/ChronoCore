@@ -122,4 +122,38 @@ class WorkflowRepository:
 
         return WorkflowQuery(
             self.history_manager
-        )        
+        )
+
+    def to_dict(self):
+
+        return {
+            "history":
+                self.history_manager.to_dict(),
+
+            "active_branch":
+                self.history_manager.active_branch,
+        }
+
+
+    @classmethod
+    def from_dict(
+        cls,
+        data
+    ):
+
+        repo = cls()
+
+        repo.history_manager = (
+            HistoryManager.from_dict(
+                data["history"]
+            )
+        )
+
+        repo.history_manager.active_branch = (
+            data.get(
+                "active_branch",
+                "main"
+            )
+        )
+
+        return repo        

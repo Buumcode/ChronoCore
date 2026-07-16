@@ -1,11 +1,4 @@
 class WorkflowReport:
-    """
-    Универсальный результат анализа workflow.
-
-    Хранит семантическую информацию,
-    полученную Inspector.
-    """
-
 
     def __init__(self):
 
@@ -14,17 +7,19 @@ class WorkflowReport:
 
     def add(
         self,
-        key: str,
-        value,
+        key,
+        value
     ):
+
         self.data[key] = value
 
 
     def get(
         self,
-        key: str,
-        default=None,
+        key,
+        default=None
     ):
+
         return self.data.get(
             key,
             default
@@ -33,8 +28,9 @@ class WorkflowReport:
 
     def __getitem__(
         self,
-        key: str,
+        key
     ):
+
         return self.data[key]
 
 
@@ -43,9 +39,14 @@ class WorkflowReport:
         return self.data
 
 
-    def __repr__(self):
+    @classmethod
+    def from_dict(
+        cls,
+        data
+    ):
 
-        return (
-            f"<WorkflowReport "
-            f"{list(self.data.keys())}>"
-        )
+        report = cls()
+
+        report.data = data
+
+        return report
