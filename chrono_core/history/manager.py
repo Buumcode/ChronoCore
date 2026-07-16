@@ -146,8 +146,24 @@ class HistoryManager:
             name
         )
 
+        branch.parent = self.current_branch
+
+
+        current = self._branch()
+
+        if current.all():
+
+            branch.branch_point = current.all()[-1]
+
+        else:
+
+            branch.branch_point = None
+
+        branch.parent = self.current_branch
+        branch.branch_point = self.latest()
+
         self.branches[name] = branch
-        
+            
         self.event_log.add(
             "branch_created",
             {

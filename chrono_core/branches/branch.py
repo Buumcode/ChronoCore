@@ -9,10 +9,17 @@ class WorkflowBranch:
 
     def __init__(
         self,
-        name: str,
+        name,
+        parent=None,
+        branch_point=None
     ):
 
         self.name = name
+
+        self.parent = parent
+
+        self.branch_point = branch_point
+
         self.snapshots = []
 
 

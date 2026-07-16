@@ -262,25 +262,36 @@ class WorkflowTimeline:
             return []
 
 
-        result = []
-
-
         target = self.history.branches[
             branch
         ]
 
 
-        for snapshot in target.all():
+        snapshots = []
 
-            result.append(
-                {
-                    "snapshot": snapshot.id,
-                    "report": snapshot.report.to_dict(),
-                }
+
+        branch_point = getattr(
+            target,
+            "branch_point",
+            None
+        )
+
+
+        if branch_point is not None:
+            snapshots.append(
+                branch_point
             )
 
 
-        return result
+        snapshots.extend(
+            target.all()
+        )
+
+
+        return [
+            snapshot.report.to_dict()
+            for snapshot in snapshots
+        ]
         
     def compare_branches(
         self,
@@ -310,11 +321,11 @@ class WorkflowTimeline:
 
 
         old_report = WorkflowReport.from_dict(
-            old_history[-1]["report"]
+            old_history[-1]
         )
 
         new_report = WorkflowReport.from_dict(
-            new_history[-1]["report"]
+            new_history[-1]
         )
 
 
@@ -523,4 +534,4 @@ class WorkflowTimeline:
         )
 
 
-        return report.to_dict()        
+        return report.to_dict()

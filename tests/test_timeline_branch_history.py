@@ -12,7 +12,7 @@ def test_timeline_branch_history():
     first.add(
         "sampler",
         {
-            "steps": 20
+            "steps":20
         }
     )
 
@@ -25,7 +25,6 @@ def test_timeline_branch_history():
         "experiment"
     )
 
-
     repo.checkout(
         "experiment"
     )
@@ -36,10 +35,9 @@ def test_timeline_branch_history():
     second.add(
         "sampler",
         {
-            "steps": 40
+            "steps":40
         }
     )
-
 
     repo.add(
         second
@@ -55,3 +53,9 @@ def test_timeline_branch_history():
 
 
     assert len(history) == 2
+
+    assert (
+        history[1]["sampler"]["steps"]
+        ==
+        40
+    )
