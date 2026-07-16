@@ -499,4 +499,28 @@ class WorkflowTimeline:
 
         snapshot = snapshots[index]
 
-        return snapshot.report.to_dict()        
+        return snapshot.report.to_dict() 
+
+    def rollback(
+        self,
+        index
+    ):
+
+        snapshots = self.history.all()
+
+        snapshot = snapshots[index]
+
+
+        from ..report import WorkflowReport
+
+        report = WorkflowReport.from_dict(
+            snapshot.report.to_dict()
+        )
+
+
+        self.history.add(
+            report
+        )
+
+
+        return report.to_dict()        
