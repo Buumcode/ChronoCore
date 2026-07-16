@@ -428,3 +428,24 @@ class WorkflowTimeline:
 
 
         return snapshot.report.to_dict()
+        
+    def reconstruct(
+        self,
+        index
+    ):
+
+        snapshots = self.history.all()
+
+
+        if not snapshots:
+            return None
+
+
+        if index < 0 or index >= len(snapshots):
+            return None
+
+
+        snapshot = snapshots[index]
+
+
+        return snapshot.report.to_dict()        
