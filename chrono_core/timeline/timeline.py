@@ -13,7 +13,6 @@ class WorkflowTimeline:
         self.history = history
 
 
-
     def build(self):
 
         snapshots = self.history.all()
@@ -49,13 +48,19 @@ class WorkflowTimeline:
             )
 
 
-            if diff:
-                print("TIMELINE DIFF:", diff)
+            if (
+                diff["changed"]
+                or diff["added"]
+                or diff["removed"]
+            ):
+
                 events.append(
                     {
                         "type": "changed",
                         "snapshot": current.id,
-                        "changes": self._normalize_diff(diff),
+                        "changes": self._normalize_diff(
+                            diff
+                        ),
                     }
                 )
 
