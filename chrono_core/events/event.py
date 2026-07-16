@@ -36,3 +36,21 @@ class WorkflowEvent:
             "created":
                 self.created.isoformat(),
         }
+        
+    @classmethod
+    def from_dict(
+        cls,
+        data
+    ):
+
+        event = cls(
+            data["type"],
+            data.get(
+                "payload",
+                {}
+            )
+        )
+
+        event.id = data["id"]
+
+        return event        

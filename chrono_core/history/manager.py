@@ -147,6 +147,13 @@ class HistoryManager:
         )
 
         self.branches[name] = branch
+        
+        self.event_log.add(
+            "branch_created",
+            {
+                "branch": name
+            }
+        )
 
         return branch
 
@@ -186,6 +193,14 @@ class HistoryManager:
 
 
         self.current_branch = name
+        
+        self.event_log.add(
+            "branch_checkout",
+            {
+                "branch": name
+            }
+        )        
+        
         self.active_branch = name
 
         self.snapshots = (
@@ -210,7 +225,10 @@ class HistoryManager:
 
             "active_branch":
                 self.active_branch,
-        }  
+                
+            "events":
+                self.event_log.to_dict(),    
+                    }  
 
     @classmethod
     def from_dict(
@@ -219,6 +237,18 @@ class HistoryManager:
     ):
 
         manager = cls()
+        
+        from ..events import WorkflowEventLog
+
+
+        manager.event_log = (
+            WorkflowEventLog.from_dict(
+                data.get(
+                    "events",
+                    []
+                )
+            )
+        )        
 
         manager.branches = {}
 

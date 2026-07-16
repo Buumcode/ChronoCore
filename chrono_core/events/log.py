@@ -48,3 +48,25 @@ class WorkflowEventLog:
             for event
             in self.events
         ]
+        
+    @classmethod
+    def from_dict(
+        cls,
+        data
+    ):
+
+        log = cls()
+
+        from .event import WorkflowEvent
+
+
+        for item in data:
+
+            log.events.append(
+                WorkflowEvent.from_dict(
+                    item
+                )
+            )
+
+
+        return log        
