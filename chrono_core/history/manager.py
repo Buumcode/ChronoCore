@@ -1,11 +1,14 @@
 from .snapshot import WorkflowSnapshot
 from ..branches import WorkflowBranch
 from ..report import WorkflowReport
+from ..events import WorkflowEventLog
 
 
 class HistoryManager:
 
     def __init__(self):
+
+        self.event_log = WorkflowEventLog()
 
         main = WorkflowBranch(
             "main"
@@ -61,6 +64,13 @@ class HistoryManager:
             item
         )
 
+        self.event_log.add(
+            "snapshot_created",
+            {
+                "snapshot": item.id,
+                "branch": branch,
+            }
+)
 
         if branch == self.current_branch:
 
@@ -250,4 +260,8 @@ class HistoryManager:
             )
 
 
-        return manager        
+        return manager 
+
+    def events(self):
+
+        return self.event_log.all()        
