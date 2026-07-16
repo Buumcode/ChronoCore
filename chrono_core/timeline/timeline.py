@@ -411,4 +411,20 @@ class WorkflowTimeline:
             ),
 
             "metrics": self.metric_summary(),
-        }        
+        }
+
+    def snapshot_at(
+        self,
+        index
+    ):
+
+        snapshots = self.history.all()
+
+        if index < 0 or index >= len(snapshots):
+            return None
+
+
+        snapshot = snapshots[index]
+
+
+        return snapshot.report.to_dict()
