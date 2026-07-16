@@ -49,7 +49,7 @@ class WorkflowRepository:
 
         return WorkflowTimeline(
             self.history_manager
-        ).build()
+        )
 
 
     def diff(

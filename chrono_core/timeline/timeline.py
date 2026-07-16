@@ -49,15 +49,15 @@ class WorkflowTimeline:
             )
 
 
-        if diff:
-            print("TIMELINE DIFF:", diff)
-            events.append(
-                {
-                    "type": "changed",
-                    "snapshot": current.id,
-                    "changes": self._normalize_diff(diff),
-                }
-            )
+            if diff:
+                print("TIMELINE DIFF:", diff)
+                events.append(
+                    {
+                        "type": "changed",
+                        "snapshot": current.id,
+                        "changes": self._normalize_diff(diff),
+                    }
+                )
 
 
         return events
@@ -71,4 +71,11 @@ class WorkflowTimeline:
             return diff["changed"]
 
 
-        return diff        
+        return diff
+
+    def events(self):
+
+        return [
+            event.to_dict()
+            for event in self.history.events()
+        ]       
