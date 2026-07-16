@@ -79,3 +79,21 @@ class WorkflowTimeline:
             event.to_dict()
             for event in self.history.events()
         ]       
+        
+    def stream(self):
+
+        stream = []
+
+
+        for event in self.history.events():
+
+            stream.append(
+                event.to_dict()
+            )
+
+
+        return sorted(
+            stream,
+            key=lambda item:
+                item["created"]
+        )        
