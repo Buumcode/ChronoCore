@@ -322,3 +322,69 @@ class WorkflowTimeline:
             old_report,
             new_report
         )        
+        
+    def metrics(self):
+
+        result = []
+
+
+        for snapshot in self.history.all():
+
+            report = snapshot.report
+
+
+            if report.metrics:
+
+                result.append(
+                    report.metrics.copy()
+                )
+
+
+        return result 
+
+    def metric_summary(self):
+
+        metrics = self.metrics()
+
+        result = {}
+
+
+        for item in metrics:
+
+            for name, value in item.items():
+
+                if name not in result:
+
+                    result[name] = {
+                        "count": 0,
+                        "min": value,
+                        "max": value,
+                        "sum": 0,
+                    }
+
+
+                result[name]["count"] += 1
+
+                result[name]["sum"] += value
+
+
+                if value < result[name]["min"]:
+                    result[name]["min"] = value
+
+
+                if value > result[name]["max"]:
+                    result[name]["max"] = value
+
+
+        for name in result:
+
+            result[name]["avg"] = (
+                result[name]["sum"]
+                /
+                result[name]["count"]
+            )
+
+            del result[name]["sum"]
+
+
+        return result        

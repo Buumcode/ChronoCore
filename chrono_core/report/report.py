@@ -3,6 +3,7 @@ class WorkflowReport:
     def __init__(self):
 
         self.data = {}
+        self.metrics = {}
 
 
     def add(
@@ -12,6 +13,15 @@ class WorkflowReport:
     ):
 
         self.data[key] = value
+
+
+    def metric(
+        self,
+        key,
+        value
+    ):
+
+        self.metrics[key] = value
 
 
     def get(
@@ -36,7 +46,16 @@ class WorkflowReport:
 
     def to_dict(self):
 
-        return self.data
+        result = dict(self.data)
+
+        result["metrics"] = self.metrics
+
+        return result
+
+
+    def metrics_dict(self):
+
+        return self.metrics
 
 
     @classmethod
