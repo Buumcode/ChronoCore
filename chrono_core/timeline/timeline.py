@@ -395,4 +395,20 @@ class WorkflowTimeline:
             "events": len(self.stream()),
             "snapshots": len(self.history.all()),
             "metrics": self.metric_summary(),
+        }
+
+    def report(self):
+
+        return {
+            "events": len(self.stream()),
+
+            "snapshots": len(
+                self.history.all()
+            ),
+
+            "branches": (
+                self.history.list_branches()
+            ),
+
+            "metrics": self.metric_summary(),
         }        
