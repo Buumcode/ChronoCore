@@ -567,7 +567,29 @@ class WorkflowTimeline:
                 )
 
 
+        edges = []
+
+
+        previous = None
+
+
+        for node in nodes:
+
+            if previous:
+
+                edges.append(
+                    {
+                        "from": previous["id"],
+                        "to": node["id"],
+                    }
+                )
+
+
+            previous = node
+
+
+
         return WorkflowTimelineGraph(
             nodes=nodes,
-            edges=[]
+            edges=edges
         )   
