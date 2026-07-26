@@ -535,3 +535,39 @@ class WorkflowTimeline:
 
 
         return report.to_dict()
+        
+    def graph(self):
+
+        from .graph import WorkflowTimelineGraph
+
+
+        nodes = []
+
+
+        for event in self.build():
+
+            snapshot_id = event.get(
+                "snapshot"
+            )
+
+            if snapshot_id:
+
+                nodes.append(
+                    {
+                        "id": snapshot_id,
+                        "snapshot": snapshot_id,
+                        "report": (
+                            event.get("report")
+                            or
+                            event.get("state")
+                            or
+                            {}
+                        ),
+                    }
+                )
+
+
+        return WorkflowTimelineGraph(
+            nodes=nodes,
+            edges=[]
+        )   
