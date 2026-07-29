@@ -1,9 +1,13 @@
+from ..diff import WorkflowDiff
+from ..report import WorkflowReport
+from ..query import QueryEngine
+
+
 class WorkflowTimeline:
     """
     Преобразует историю snapshot
     в последовательность событий.
     """
-
 
     def __init__(
         self,
@@ -11,6 +15,8 @@ class WorkflowTimeline:
     ):
 
         self.history = history
+
+        self.query = QueryEngine()
 
 
     def build(self):
@@ -25,11 +31,9 @@ class WorkflowTimeline:
 
 
         events.append(
-            {
-                "type": "created",
-                "message": "Initial workflow",
-                "snapshot": snapshots[0].id,
-            }
+            self._create_initial_event(
+                snapshots[0]
+            )
         )
 
 
@@ -55,13 +59,10 @@ class WorkflowTimeline:
             ):
 
                 events.append(
-                    {
-                        "type": "changed",
-                        "snapshot": current.id,
-                        "changes": self._normalize_diff(
-                            diff
-                        ),
-                    }
+                    self._create_change_event(
+                        current,
+                        self._normalize_diff(diff),
+                    )
                 )
 
 
@@ -84,6 +85,7 @@ class WorkflowTimeline:
             event.to_dict()
             for event in self.history.events()
         ]       
+
         
     def stream(self):
 
@@ -102,6 +104,7 @@ class WorkflowTimeline:
             key=lambda item:
                 item["created"]
         )        
+
         
     def filter(
         self,
@@ -150,8 +153,7 @@ class WorkflowTimeline:
 
     def summary(self):
 
-        stream = self.stream()
-
+        stream = self.stream()        
 
         result = {
             "total": len(stream),
@@ -163,12 +165,13 @@ class WorkflowTimeline:
 
         for item in stream:
 
-            event_type = item.get(
-                "type"
-            )
+            event_type = item.get("type")
 
 
-            if event_type == "snapshot_created":
+            if event_type in (
+                "snapshot_created",
+                "created",
+            ):
                 result["snapshots"] += 1
 
 
@@ -314,11 +317,6 @@ class WorkflowTimeline:
                 "added": {},
                 "removed": {},
             }
-
-
-        from ..diff import WorkflowDiff
-        from ..report import WorkflowReport
-
 
         old_report = WorkflowReport.from_dict(
             old_history[-1]
@@ -536,60 +534,323 @@ class WorkflowTimeline:
 
         return report.to_dict()
         
+
     def graph(self):
 
         from .graph import WorkflowTimelineGraph
 
-
         nodes = []
-
-
-        for event in self.build():
-
-            snapshot_id = event.get(
-                "snapshot"
-            )
-
-            if snapshot_id:
-
-                nodes.append(
-                    {
-                        "id": snapshot_id,
-                        "snapshot": snapshot_id,
-                        "report": (
-                            event.get("report")
-                            or
-                            event.get("state")
-                            or
-                            {}
-                        ),
-                    }
-                )
-
-
         edges = []
-
 
         previous = None
 
+        for snapshot in self.history.all():
 
-        for node in nodes:
+            nodes.append(
+                {
+                    "id": snapshot.id,
+                    "snapshot": snapshot.id,
+                    "report": snapshot.report.to_dict(),
+                }
+            )
 
-            if previous:
+            if previous is not None:
 
                 edges.append(
                     {
-                        "from": previous["id"],
-                        "to": node["id"],
+                        "from": previous.id,
+                        "to": snapshot.id,
                     }
                 )
 
-
-            previous = node
-
-
+            previous = snapshot
 
         return WorkflowTimelineGraph(
             nodes=nodes,
-            edges=edges
+            edges=edges,
         )   
+
+        
+    def history_between(
+        self,
+        start,
+        end,
+    ):
+
+        graph = self.graph()
+
+        ids = graph.path(
+            start,
+            end,
+        )
+
+        result = []
+
+        for node_id in ids:
+
+            node = graph.find_node(
+                node_id
+            )
+
+            result.append(
+                node
+            )
+
+        return result        
+
+    def changes_between(
+        self,
+        start,
+        end,
+    ):
+
+        history = self.history_between(
+            start,
+            end,
+        )
+
+
+        if len(history) < 2:
+            return {}
+
+
+        old_report = WorkflowReport.from_dict(
+            history[0]["report"]
+        )
+
+
+        new_report = WorkflowReport.from_dict(
+            history[-1]["report"]
+        )
+
+
+        diff = WorkflowDiff()
+
+
+        return diff.compare(
+            old_report,
+            new_report,
+        ) 
+
+    def branch_base(
+        self,
+        old_branch,
+        new_branch,
+    ):
+
+        branch = self.history.branches.get(
+            new_branch
+        )
+
+        if branch is None:
+            return None
+
+
+        point = getattr(
+            branch,
+            "branch_point",
+            None,
+        )
+
+        if point is None:
+            return None
+
+
+        return point.id        
+
+    def merge_preview(
+        self,
+        target_branch,
+        source_branch,
+    ):
+
+        return self.compare_branches(
+            target_branch,
+            source_branch,
+        )        
+        
+    def merge_conflicts(
+        self,
+        target_branch,
+        source_branch,
+    ):
+
+        diff = self.compare_branches(
+            target_branch,
+            source_branch,
+        )
+
+        return diff.get(
+            "changed",
+            {}
+        )        
+        
+    def merge(
+        self,
+        target_branch,
+        source_branch,
+    ):
+
+        history = self.branch_history(
+            source_branch
+        )
+
+        if not history:
+            return None
+
+        return history[-1]
+        
+        
+    def find_snapshots(
+        self,
+        **filters,
+    ):
+
+        result = []
+
+        for snapshot in self.history.all():
+
+            data = snapshot.report.to_dict()
+
+            matched = True
+
+            for key, expected in filters.items():
+
+                parts, operator = self.query.parse_filter(
+                    key
+                )
+
+                value = data
+
+                for part in parts:
+
+                    if not isinstance(
+                        value,
+                        dict,
+                    ):
+
+                        matched = False
+                        break
+
+                    if part not in value:
+
+                        matched = False
+                        break
+
+                    value = value[part]
+
+                if not matched:
+
+                    break
+
+                if not self.query.match(
+                    value,
+                    operator,
+                    expected,
+                ):
+
+                    matched = False
+                    break
+
+            if matched:
+
+                result.append(
+                    snapshot
+                )
+
+        from ..query.result import QueryResult
+
+        return QueryResult(
+            result
+        )
+        
+        
+    def find(
+        self,
+        **filters,
+    ):
+
+        from ..query.result import QueryResult
+
+
+        return QueryResult(
+            [
+                snapshot.report.to_dict()
+                for snapshot in self.find_snapshots(
+                    **filters
+                )
+            ]
+        )       
+        
+    def first(
+        self,
+        **filters,
+    ):
+
+        items = self.find(
+            **filters
+        )
+
+        if not items:
+            return None
+
+        return items[0]        
+        
+    def last(
+        self,
+        **filters,
+    ):
+
+        items = self.find(
+            **filters
+        )
+
+        if not items:
+            return None
+
+        return items[-1]        
+        
+    def exists(
+        self,
+        **filters,
+    ):
+
+        return bool(
+            self.find_snapshots(
+                **filters
+            )
+        )        
+        
+    def count(
+        self,
+        **filters,
+    ):
+
+        return len(
+            self.find_snapshots(
+                **filters
+            )
+        )
+
+    def _create_initial_event(
+        self,
+        snapshot,
+    ):
+
+        return {
+            "type": "created",
+            "message": "Initial workflow",
+            "snapshot": snapshot.id,
+        }  
+
+    def _create_change_event(
+        self,
+        snapshot,
+        changes,
+    ):
+
+        return {
+            "type": "changed",
+            "snapshot": snapshot.id,
+            "changes": changes,
+        }        

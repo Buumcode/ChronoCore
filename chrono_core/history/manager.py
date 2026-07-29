@@ -20,7 +20,7 @@ class HistoryManager:
 
         self.current_branch = "main"
 
-        # compatibility with old API
+        # compatibility with pre-1.0 API
         self.active_branch = "main"
 
         self.snapshots = main.snapshots
@@ -146,9 +146,6 @@ class HistoryManager:
             name
         )
 
-        branch.parent = self.current_branch
-
-
         current = self._branch()
 
         if current.all():
@@ -219,6 +216,7 @@ class HistoryManager:
         
         self.active_branch = name
 
+        # compatibility with pre-1.0 API
         self.snapshots = (
             self.branches[name].snapshots
         )
@@ -235,7 +233,7 @@ class HistoryManager:
                     for name, branch
                     in self.branches.items()
                 },
-
+            # compatibility with pre-1.0 API
             "current_branch":
                 self.current_branch,
 
@@ -253,7 +251,7 @@ class HistoryManager:
     ):
 
         manager = cls()
-        
+        # up this import to first lines?        
         from ..events import WorkflowEventLog
 
 
@@ -267,7 +265,7 @@ class HistoryManager:
         )        
 
         manager.branches = {}
-
+        # up this import to first lines?
         from ..branches import WorkflowBranch
 
 

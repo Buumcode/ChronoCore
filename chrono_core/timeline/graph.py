@@ -268,3 +268,39 @@ class WorkflowTimelineGraph:
 
 
         return []        
+        
+    def has_path(
+        self,
+        start,
+        end,
+    ):
+
+        return bool(
+            self.path(
+                start,
+                end,
+            )
+        )
+        
+    def is_ancestor(
+        self,
+        ancestor,
+        node,
+    ):
+
+        return self.has_path(
+            ancestor,
+            node,
+        )        
+        
+    def is_descendant(
+        self,
+        node,
+        ancestor,
+    ):
+
+        return self.is_ancestor(
+            ancestor,
+            node,
+        )        
+        

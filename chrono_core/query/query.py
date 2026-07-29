@@ -1,6 +1,3 @@
-from ..history import HistoryManager
-
-
 class WorkflowQuery:
 
     def __init__(self, history):

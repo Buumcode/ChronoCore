@@ -64,32 +64,6 @@ class WorkflowRepository:
         )
 
 
-    def save(
-        self,
-        path
-    ):
-
-        store = JsonHistoryStore(
-            path
-        )
-
-        store.save(
-            self.history_manager
-        )
-
-
-    def load(
-        self,
-        path
-    ):
-
-        store = JsonHistoryStore(
-            path
-        )
-
-        return store.load()
-
-
     def all(self):
 
         return self.history_manager.all()
@@ -206,3 +180,11 @@ class WorkflowRepository:
         return serializer.load(
             data
         )            
+
+    def snapshot_index(self):
+
+        from ..index import SnapshotIndex
+
+        return SnapshotIndex(
+            self
+        )

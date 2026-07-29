@@ -56,4 +56,4 @@ def test_find_clip_source():
            "CLIPTextEncode"
 
 
-    print(node)
+#   print(node)
