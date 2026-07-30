@@ -24,19 +24,25 @@ timeline analysis and querying.
 
 ---
 
-# Installation
+# Development Setup
 
 Clone the repository:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Buumcode/ChronoCore.git
 cd ChronoCore
 ````
 
-Install dependencies:
+Install the package in editable mode:
 
 ```bash
-pip install -r requirements.txt
+pip install -e .
+```
+
+Run tests:
+
+```bash
+python -m pytest
 ```
 
 ---

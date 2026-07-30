@@ -1,12 +1,19 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
-
 
 [project]
 name = "chrono-core"
-version = "0.1.0"
+version = "1.0.0"
+description = "Workflow history and analysis engine for ComfyUI"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
 
+[project.optional-dependencies]
+dev = [
+    "pytest",
+]
 
 [tool.setuptools.packages.find]
 where = ["."]
