@@ -2,6 +2,7 @@ from ..extractors.prompt import PromptExtractor
 from ..extractors.sampler import SamplerExtractor
 from ..extractors.model import ModelExtractor
 from ..extractors.lora import LoRAExtractor
+from ..extractors.image import ImageExtractor
 from ..conditioning.resolver import ConditioningResolver
 from ..report import WorkflowReport
 from ..analyzers.statistics import WorkflowStatistics
@@ -24,6 +25,8 @@ class Inspector:
         self.sampler_extractor = SamplerExtractor()
         self.model_extractor = ModelExtractor()
         self.lora_extractor = LoRAExtractor()
+        self.image_extractor = ImageExtractor()
+
         self.statistics = WorkflowStatistics()
         self.dependency_analyzer = DependencyAnalyzer()
 
@@ -46,6 +49,11 @@ class Inspector:
         report.add(
             "model",
             self.model_extractor.extract(graph)
+        )
+        
+        report.add(
+            "image",
+            self.image_extractor.extract(graph)
         )
         
         report.add(
