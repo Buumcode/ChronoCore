@@ -96,7 +96,7 @@ class WorkflowStatistics:
 
         for value in node.inputs.values():
 
-            if isinstance(value, list):
+            if isinstance(value, list) and value:
 
                 parent = graph.get(
                     value[0]
